@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康计算器 - 老登学习工具箱</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* 统一配色方案 */
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #0b5ed7;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .health-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+
+        .health-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .health-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .card-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: var(--border-radius);
+            display: none;
+        }
+
+        .health-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+
+        @media (max-width: 768px) {
+            .health-container {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="health-header">
+        <h1><i class="fas fa-heartbeat"></i> 健康计算器</h1>
+        <p>多种健康指标计算工具，助您了解身体状况</p>
+    </div>
+    
+    <div class="health-container">
+        <!-- BMI计算器 -->
+        <div class="health-card" id="bmi-calculator">
+            <div class="card-title"><i class="fas fa-weight"></i> BMI计算器</div>
+            <div class="card-content">
+                <div class="input-group">
+                    <label for="height">身高 (cm)</label>
+                    <input type="number" id="height" placeholder="请输入身高">
+                </div>
+                <div class="input-group">
+                    <label for="weight">体重 (kg)</label>
+                    <input type="number" id="weight" placeholder="请输入体重">
+                </div>
+                <button onclick="calculateBMI()">计算BMI</button>
+                <div class="result-box" id="bmi-result">
+                    <h3>您的BMI结果</h3>
+                    <p id="bmi-value"></p>
+                    <p id="bmi-category"></p>
+                    <p id="bmi-suggestion"></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 体脂率计算器 -->
+        <div class="health-card" id="bodyfat-calculator" style="display: none;">
+            <div class="card-title"><i class="fas fa-percentage"></i> 体脂率计算器</div>
+            <div class="card-content">
+                <div class="input-group">
+                    <label>性别</label>
+                    <select id="gender" onchange="toggleHipInput()">
+                        <option value="male">男性</option>
+                        <option value="female">女性</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="neck">颈围 (cm)</label>
+                    <input type="number" id="neck" placeholder="颈围">
+                </div>
+                <div class="input-group">
+                    <label for="waist">腰围 (cm)</label>
+                    <input type="number" id="waist" placeholder="腰围">
+                </div>
+                <div class="input-group" id="hip-group">
+                    <label for="hip">臀围 (cm)</label>
+                    <input type="number" id="hip" placeholder="臀围">
+                </div>
+                <button onclick="calculateBodyFat()">计算体脂率</button>
+                <div class="result-box" id="bodyfat-result">
+                    <h3>您的体脂率</h3>
+                    <p id="bodyfat-value"></p>
+                    <p id="bodyfat-category"></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 热量需求计算器 -->
+        <div class="health-card" id="calories-calculator" style="display: none;">
+            <div class="card-title"><i class="fas fa-fire"></i> 每日热量需求</div>
+            <div class="card-content">
+                <div class="input-group">
+                    <label>性别</label>
+                    <select id="cal-gender">
+                        <option value="male">男性</option>
+                        <option value="female">女性</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="age">年龄</label>
+                    <input type="number" id="age" placeholder="年龄">
+                </div>
+                <div class="input-group">
+                    <label for="cal-height">身高 (cm)</label>
+                    <input type="number" id="cal-height" placeholder="身高">
+                </div>
+                <div class="input-group">
+                    <label for="cal-weight">体重 (kg)</label>
+                    <input type="number" id="cal-weight" placeholder="体重">
+                </div>
+                <div class="input-group">
+                    <label for="activity">活动水平</label>
+                    <select id="activity">
+                        <option value="1.2">久坐不动</option>
+                        <option value="1.375">轻度活动</option>
+                        <option value="1.55">中度活动</option>
+                        <option value="1.725">重度活动</option>
+                        <option value="1.9">极重度活动</option>
+                    </select>
+                </div>
+                <button onclick="calculateCalories()">计算热量需求</button>
+                <div class="result-box" id="calories-result">
+                    <h3>您的每日热量需求</h3>
+                    <p id="calories-value"></p>
+                    <p id="calories-suggestion"></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 饮水建议计算器 -->
+        <div class="health-card" id="water-calculator" style="display: none;">
+            <div class="card-title"><i class="fas fa-tint"></i> 每日饮水建议</div>
+            <div class="card-content">
+                <div class="input-group">
+                    <label for="water-weight">体重 (kg)</label>
+                    <input type="number" id="water-weight" placeholder="体重">
+                </div>
+                <div class="input-group">
+                    <label for="water-activity">活动水平</label>
+                    <select id="water-activity">
+                        <option value="30">低强度</option>
+                        <option value="35">中等强度</option>
+                        <option value="40">高强度</option>
+                    </select>
+                </div>
+                <button onclick="calculateWater()">计算饮水量</button>
+                <div class="result-box" id="water-result">
+                    <h3>您的每日饮水量建议</h3>
+                    <p id="water-value"></p>
+                    <p id="water-suggestion"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增导航按钮 -->
+    <div class="health-nav" style="position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #eee; z-index: 1000;">
+        <button class="health-nav-btn active" data-tab="bmi">
+            <i class="fas fa-weight"></i>
+            <span>BMI</span>
+        </button>
+        <button class="health-nav-btn" data-tab="bodyfat">
+            <i class="fas fa-percentage"></i>
+            <span>体脂</span>
+        </button>
+        <button class="health-nav-btn" data-tab="calories">
+            <i class="fas fa-fire"></i>
+            <span>热量</span>
+        </button>
+        <button class="health-nav-btn" data-tab="water">
+            <i class="fas fa-tint"></i>
+            <span>饮水</span>
+        </button>
+    </div>
+
+    <div class="health-footer">
+        <p>© 2025 老登学习工具箱 | <a href="https://laodeng144.com/" target="_blank">访问网站</a></p>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化显示第一个计算器
+    document.getElementById('bmi-calculator').style.display = 'block';
+    
+    // 底部导航点击事件
+    const navBtns = document.querySelectorAll('.health-nav-btn');
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // 更新导航按钮状态
+            navBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // 切换对应的计算器
+            const tabId = this.dataset.tab;
+            const calculators = ['bmi', 'bodyfat', 'calories', 'water'];
+            calculators.forEach(calculator => {
+                document.getElementById(`${calculator}-calculator`).style.display = calculator === tabId ? 'block' : 'none';
+            });
+            
+            // 触控反馈
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 100);
+            
+            // 滚动到顶部
+            window.scrollTo(0, 0);
+        });
+    });
+});
+
+        // 根据性别显示/隐藏臀围输入
+        function toggleHipInput() {
+            const gender = document.getElementById('gender').value;
+            document.getElementById('hip-group').style.display = 
+                gender === 'female' ? 'block' : 'none';
+        }
+        
+        // BMI计算函数
+        function calculateBMI() {
+            const height = parseFloat(document.getElementById('height').value) / 100;
+            const weight = parseFloat(document.getElementById('weight').value);
+            
+            if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0) {
+                alert('请输入有效的身高和体重数值');
+                return;
+            }
+            
+            const bmi = (weight / (height * height)).toFixed(1);
+            let category, suggestion;
+            
+            if (bmi < 18.5) {
+                category = "体重过轻";
+                suggestion = "建议适当增加营养摄入，保持均衡饮食";
+            } else if (bmi < 24) {
+                category = "正常范围";
+                suggestion = "保持健康饮食和适量运动";
+            } else if (bmi < 28) {
+                category = "超重";
+                suggestion = "建议控制饮食，增加运动量";
+            } else {
+                category = "肥胖";
+                suggestion = "建议咨询医生或营养师，制定减重计划";
+            }
+            
+            document.getElementById('bmi-value').innerText = `BMI值: ${bmi}`;
+            document.getElementById('bmi-category').innerText = `分类: ${category}`;
+            document.getElementById('bmi-suggestion').innerText = `建议: ${suggestion}`;
+            document.getElementById('bmi-result').style.display = 'block';
+        }
+        
+        // 体脂率计算函数
+        function calculateBodyFat() {
+            const gender = document.getElementById('gender').value;
+            const neck = parseFloat(document.getElementById('neck').value);
+            const waist = parseFloat(document.getElementById('waist').value);
+            const hip = gender === 'female' ? parseFloat(document.getElementById('hip').value) : 0;
+            
+            if (isNaN(neck) || isNaN(waist) || (gender === 'female' && isNaN(hip))) {
+                alert('请输入有效的测量数值');
+                return;
+            }
+            
+            let bodyFat;
+            if (gender === 'male') {
+                bodyFat = (86.010 * Math.log10(waist - neck) - 70.041 * Math.log10(neck) + 36.76).toFixed(1);
+            } else {
+                bodyFat = (163.205 * Math.log10(waist + hip - neck) - 97.684 * Math.log10(neck) - 78.387).toFixed(1);
+            }
+            
+            let category;
+            if (gender === 'male') {
+                if (bodyFat < 6) category = "必需脂肪";
+                else if (bodyFat < 14) category = "运动员水平";
+                else if (bodyFat < 18) category = "健康水平";
+                else if (bodyFat < 25) category = "正常范围";
+                else category = "肥胖";
+            } else {
+                if (bodyFat < 14) category = "必需脂肪";
+                else if (bodyFat < 21) category = "运动员水平";
+                else if (bodyFat < 25) category = "健康水平";
+                else if (bodyFat < 32) category = "正常范围";
+                else category = "肥胖";
+            }
+            
+            document.getElementById('bodyfat-value').textContent = `体脂率: ${bodyFat}%`;
+            document.getElementById('bodyfat-category').textContent = `分类: ${category}`;
+            document.getElementById('bodyfat-result').style.display = 'block';
+        }
+        
+        // 热量需求计算函数
+        function calculateCalories() {
+            const gender = document.getElementById('cal-gender').value;
+            const age = parseFloat(document.getElementById('age').value);
+            const height = parseFloat(document.getElementById('cal-height').value);
+            const weight = parseFloat(document.getElementById('cal-weight').value);
+            const activity = parseFloat(document.getElementById('activity').value);
+            
+            if (isNaN(age) || isNaN(height) || isNaN(weight) || age <= 0 || height <= 0 || weight <= 0) {
+                alert('请输入有效的个人信息');
+                return;
+            }
+            
+            let bmr;
+            if (gender === 'male') {
+                bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+            } else {
+                bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+            }
+            
+            const tdee = Math.round(bmr * activity);
+            
+            document.getElementById('calories-value').textContent = `每日热量需求: ${tdee} 千卡`;
+            document.getElementById('calories-suggestion').textContent = `维持当前体重需要每天摄入约${tdee}千卡`;
+            document.getElementById('calories-result').style.display = 'block';
+        }
+        
+        // 饮水量计算函数
+        function calculateWater() {
+            const weight = parseFloat(document.getElementById('water-weight').value);
+            const activity = parseFloat(document.getElementById('water-activity').value);
+            
+            if (isNaN(weight) || weight <= 0) {
+                alert('请输入有效的体重');
+                return;
+            }
+            
+            const water = Math.round(weight * activity);
+            
+            document.getElementById('water-value').textContent = `每日建议饮水量: ${water} 毫升`;
+            document.getElementById('water-suggestion').textContent = `约等于 ${Math.round(water / 250)} 杯水 (250ml/杯)`;
+            document.getElementById('water-result').style.display = 'block';
+        }
+        
+        // 初始化页面
+        toggleHipInput();
+    </script>
+</body>
+</html>

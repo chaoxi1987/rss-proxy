@@ -1,0 +1,286 @@
+<!-- 进制转换计算器 开始 -->
+<style>
+    /* 页面容器 */
+    .calculator-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    /* 页面标题 */
+    .calculator-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .calculator-header h2 {
+        font-size: 32px;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 3px solid #0d6efd;
+        padding-bottom: 12px;
+        transition: color 0.3s ease;
+    }
+
+    .calculator-header h2:hover {
+        color: #0b5ed7;
+    }
+
+    /* 计算器主体 */
+    .calculator-body {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    /* 输入框 */
+    .calculator-input {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .calculator-input label {
+        font-size: 18px;
+        color: #34495e;
+        font-weight: 500;
+    }
+
+    .calculator-input input, .calculator-input select {
+        padding: 12px;
+        font-size: 18px;
+        border: 1px solid #d3d3d3;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        background-color: #ffffff;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .calculator-input input:focus, .calculator-input select:focus {
+        border-color: #0d6efd;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+    }
+
+    /* 转换按钮 */
+    .convert-button {
+        padding: 12px 24px;
+        background: #0d6efd;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+    }
+
+    .convert-button:hover {
+        background: #0b5ed7;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(13, 110, 253, 0.3);
+    }
+
+    /* 结果展示 */
+    .result-section {
+        margin-top: 25px;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .result-section h3 {
+        font-size: 22px;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #0d6efd;
+        padding-bottom: 8px;
+    }
+
+    .result-section p {
+        font-size: 18px;
+        color: #34495e;
+        margin: 8px 0;
+    }
+
+    /* 使用说明 */
+    .usage-instructions {
+        margin-top: 30px;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        font-size: 16px;
+        color: #34495e;
+        transition: all 0.3s ease;
+    }
+
+    .usage-instructions h4 {
+        font-size: 20px;
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+
+    .usage-instructions ul {
+        margin-left: 25px;
+        list-style-type: disc;
+    }
+
+    /* 版权信息 */
+    .copyright-info {
+        text-align: center;
+        margin-top: 50px;
+        padding: 25px 0;
+        border-top: 1px solid #eee;
+        color: #999;
+        font-size: 16px;
+        transition: color 0.3s ease;
+    }
+
+    .copyright-info a {
+        color: #0d6efd;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .copyright-info a:hover {
+        color: #0b5ed7;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 600px) {
+        .calculator-container {
+            padding: 18px;
+        }
+
+        .calculator-header h2 {
+            font-size: 28px;
+        }
+
+        .calculator-input label {
+            font-size: 16px;
+        }
+
+        .calculator-input input, .calculator-input select {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .convert-button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+
+        .result-section h3 {
+            font-size: 20px;
+        }
+
+        .result-section p {
+            font-size: 16px;
+        }
+
+        .usage-instructions h4 {
+            font-size: 18px;
+        }
+
+        .usage-instructions {
+            font-size: 14px;
+        }
+
+        .copyright-info {
+            font-size: 14px;
+        }
+    }
+</style>
+
+<div class="calculator-container">
+    <div class="calculator-header">
+        <h2>进制转换计算器</h2>
+    </div>
+    <div class="calculator-body">
+        <div class="calculator-input">
+            <label for="input-number">输入数字：</label>
+            <input type="text" id="input-number" placeholder="请输入要转换的数字">
+        </div>
+        <div class="calculator-input">
+            <label for="from-base">从进制：</label>
+            <select id="from-base">
+                <option value="2">二进制</option>
+                <option value="8">八进制</option>
+                <option value="10">十进制</option>
+                <option value="16">十六进制</option>
+            </select>
+        </div>
+        <div class="calculator-input">
+            <label for="to-base">转换为进制：</label>
+            <select id="to-base">
+                <option value="2">二进制</option>
+                <option value="8">八进制</option>
+                <option value="10">十进制</option>
+                <option value="16">十六进制</option>
+            </select>
+        </div>
+        <button class="convert-button" onclick="convertNumber()">转换</button>
+    </div>
+    <div class="result-section" id="result-section">
+        <h3>转换结果：</h3>
+        <p id="result-binary">二进制：</p>
+        <p id="result-octal">八进制：</p>
+        <p id="result-decimal">十进制：</p>
+        <p id="result-hexadecimal">十六进制：</p>
+    </div>
+
+    <!-- 新增：版权信息 -->
+    <div class="copyright-info">
+        © 2025 <a href="https://laodeng144.com/" target="_blank">老登学习工具箱</a> - 保留所有权利
+    </div>
+</div>
+
+<script>
+    function convertNumber() {
+        const inputNumber = document.getElementById('input-number').value;
+        const fromBase = parseInt(document.getElementById('from-base').value);
+        const toBase = parseInt(document.getElementById('to-base').value);
+        const resultSection = document.getElementById('result-section');
+
+        try {
+            let decimalValue;
+
+            // 将输入转换为十进制
+            if (fromBase === 2) {
+                decimalValue = parseInt(inputNumber, 2);
+            } else if (fromBase === 8) {
+                decimalValue = parseInt(inputNumber, 8);
+            } else if (fromBase === 16) {
+                decimalValue = parseInt(inputNumber, 16);
+            } else {
+                decimalValue = parseInt(inputNumber, 10);
+            }
+
+            // 转换为目标进制
+            const binaryResult = decimalValue.toString(2);
+            const octalResult = decimalValue.toString(8);
+            const decimalResult = decimalValue.toString(10);
+            const hexadecimalResult = decimalValue.toString(16).toUpperCase();
+
+            // 显示结果
+            document.getElementById('result-binary').textContent = `二进制：${binaryResult}`;
+            document.getElementById('result-octal').textContent = `八进制：${octalResult}`;
+            document.getElementById('result-decimal').textContent = `十进制：${decimalResult}`;
+            document.getElementById('result-hexadecimal').textContent = `十六进制：${hexadecimalResult}`;
+
+            resultSection.style.display = 'block';
+        } catch (error) {
+            alert('输入无效，请确保输入正确的数字和进制。');
+            resultSection.style.display = 'none';
+        }
+    }
+</script>
+<!-- 进制转换计算器 结束 -->

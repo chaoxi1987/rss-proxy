@@ -1,0 +1,491 @@
+<!-- 金融计算器 开始 -->
+<style>
+    /* 计算器容器 - 保持与主题一致 */
+    .finance-container {
+        max-width: 800px;
+        margin: 20px auto;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* 计算器标题 */
+    .finance-header {
+        background-color: #0d6efd;
+        color: white;
+        padding: 15px 20px;
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    /* 计算器内容区域 */
+    .finance-content {
+        padding: 20px;
+        min-height: calc(100vh - 260px); /* 确保内容区域足够高 */
+    }
+
+    /* 计算器表单组 */
+    .finance-group {
+        margin-bottom: 20px;
+    }
+
+    .finance-label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .finance-input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .finance-select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        background-color: #fff;
+        font-size: 14px;
+    }
+
+    /* 计算器按钮 */
+    .finance-button {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background-color: #0d6efd;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .finance-button:hover {
+        background-color: #0b5ed7;
+    }
+
+    /* 计算结果区域 */
+    .finance-result {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    /* 底部导航按钮样式 */
+    .finance-nav-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        text-align: center;
+        color: #6c757d;
+        transition: all 0.3s ease;
+    }
+
+    .finance-nav-btn i {
+        display: block;
+        font-size: 20px;
+        margin-bottom: 5px;
+    }
+
+    .finance-nav-btn span {
+        display: block;
+        font-size: 12px;
+    }
+
+    .finance-nav-btn.active {
+        color: #0d6efd;
+        font-weight: 500;
+    }
+
+    /* 标签页内容显示/隐藏 */
+    .finance-tab-content {
+        display: none;
+    }
+    
+    .finance-tab-content.active {
+        display: block;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 576px) {
+        .finance-container {
+            margin: 10px;
+        }
+    }
+</style>
+
+<div class="finance-container">
+    <div class="finance-header">
+        金融计算器
+    </div>
+    
+    <div class="finance-content">
+        <!-- 利率计算器 -->
+        <div class="finance-tab-content active" id="interest-calculator">
+            <div class="finance-group">
+                <label class="finance-label">本金金额</label>
+                <input type="number" class="finance-input" id="principal" placeholder="输入本金金额">
+            </div>
+            
+            <div class="finance-group">
+                <label class="finance-label">利率 (%)</label>
+                <input type="number" class="finance-input" id="interest-rate" placeholder="输入年利率">
+            </div>
+            
+            <div class="finance-group">
+                <label class="finance-label">期限 (年)</label>
+                <input type="number" class="finance-input" id="interest-years" placeholder="输入期限">
+            </div>
+            
+            <div class="finance-group">
+                <label class="finance-label">计息方式</label>
+                <select class="finance-select" id="interest-type">
+                    <option value="simple">简单利息</option>
+                    <option value="compound">复利</option>
+                </select>
+            </div>
+            
+            <button class="finance-button" id="calculate-interest">计算</button>
+            
+            <div class="finance-result" id="interest-result"></div>
+        </div>
+        
+        <!-- 贷款计算器 -->
+        <div class="finance-tab-content" id="loan-calculator">
+            <div class="finance-group">
+                <label class="finance-label">贷款金额</label>
+                <input type="number" class="finance-input" id="loan-amount" placeholder="输入贷款金额">
+            </div>
+            
+            <div class="finance-group">
+                <label class="finance-label">年利率 (%)</label>
+                <input type="number" class="finance-input" id="loan-rate" placeholder="输入年利率">
+            </div>
+            
+            <div class="finance-group">
+                <label class="finance-label">贷款期限 (月)</label>
+                <input type="number" class="finance-input" id="loan-term" placeholder="输入贷款期限">
+            </div>
+            
+            <div class="finance-group">
+                <label class="finance-label">还款方式</label>
+                <select class="finance-select" id="loan-type">
+                    <option value="equal-principal">等额本金</option>
+                    <option value="equal-payment">等额本息</option>
+                </select>
+            </div>
+            
+            <button class="finance-button" id="calculate-loan">计算</button>
+            
+            <div class="finance-result" id="loan-result"></div>
+        </div>
+        
+        <!-- 投资回报计算器 -->
+        <div class="finance-tab-content" id="investment-calculator">
+            <div class="finance-group">
+                <label class="finance-label">初始投资</label>
+                <input type="number" class="finance-input" id="initial-investment" placeholder="输入初始投资金额">
+            </div>
+            
+            <div class="finance-group">
+                <label class="finance-label">最终价值</label>
+                <input type="number" class="finance-input" id="final-value" placeholder="输入最终价值">
+            </div>
+            
+            <div class="finance-group">
+                <label class="finance-label">投资期限 (年)</label>
+                <input type="number" class="finance-input" id="investment-years" placeholder="输入投资期限">
+            </div>
+            
+            <div class="finance-group">
+                <label class="finance-label">计算方式</label>
+                <select class="finance-select" id="investment-type">
+                    <option value="annual">年化收益率</option>
+                    <option value="total">总回报率</option>
+                </select>
+            </div>
+            
+            <button class="finance-button" id="calculate-investment">计算</button>
+            
+            <div class="finance-result" id="investment-result"></div>
+        </div>
+        
+        <!-- 税务计算器 -->
+        <div class="finance-tab-content" id="tax-calculator">
+            <div class="finance-group">
+                <label class="finance-label">年收入</label>
+                <input type="number" class="finance-input" id="annual-income" placeholder="输入年收入金额">
+            </div>
+            
+            <div class="finance-group">
+                <label class="finance-label">扣除项</label>
+                <input type="number" class="finance-input" id="deductions" placeholder="输入扣除项总额">
+            </div>
+            
+            <div class="finance-group">
+                <label class="finance-label">税率表</label>
+                <select class="finance-select" id="tax-bracket">
+                    <option value="standard">标准税率</option>
+                    <option value="progressive">累进税率</option>
+                </select>
+            </div>
+            
+            <button class="finance-button" id="calculate-tax">计算</button>
+            
+            <div class="finance-result" id="tax-result"></div>
+        </div>
+    </div>
+    
+    <!-- 底部固定导航菜单 -->
+    <div class="finance-nav" style="position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #eee; z-index: 1000;">
+        <button class="finance-nav-btn active" data-tab="interest">
+            <i class="fas fa-percentage"></i>
+            <span>利率</span>
+        </button>
+        <button class="finance-nav-btn" data-tab="loan">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>贷款</span>
+        </button>
+        <button class="finance-nav-btn" data-tab="investment">
+            <i class="fas fa-chart-line"></i>
+            <span>投资</span>
+        </button>
+        <button class="finance-nav-btn" data-tab="tax">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span>税务</span>
+        </button>
+    </div>
+
+    <div class="finance-footer" style="padding: 15px 20px; margin-bottom: 60px; background-color: #f8f9fa; border-top: 1px solid #eee; font-size: 14px; color: #6c757d; text-align: center;">
+        计算结果仅供参考，不构成财务建议
+    </div>
+    <div class="copyright" style="padding: 15px; margin-bottom: 60px; text-align: center; font-size: 12px; color: #6c757d; border-top: 1px solid #eee;">
+        &copy; 2025 老登学习工具箱 | <a href="https://laodeng144.com/" style="color: #0d6efd;">访问官网</a>
+    </div>
+</div>
+
+<!-- Font Awesome 图标库 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 底部导航功能
+    const navBtns = document.querySelectorAll('.finance-nav-btn');
+    const tabContents = document.querySelectorAll('.finance-tab-content');
+    
+    // 初始化显示第一个计算器
+    tabContents.forEach(content => content.classList.remove('active'));
+    document.getElementById('interest-calculator').classList.add('active');
+    
+    // 底部导航点击事件
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            console.log('导航按钮点击:', this.dataset.tab); // 调试日志
+            
+            // 更新导航按钮状态
+            navBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // 切换对应的计算器
+            const tabId = this.dataset.tab;
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(tabId + '-calculator').classList.add('active');
+            
+            // 触控反馈
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 100);
+            
+            // 滚动到顶部
+            window.scrollTo(0, 0);
+        });
+    });
+    
+    // 调整内容区域高度
+    const adjustContentHeight = () => {
+        const content = document.querySelector('.finance-content');
+        const navHeight = document.querySelector('.finance-nav').offsetHeight;
+        content.style.minHeight = `calc(100vh - ${navHeight + 200}px)`;
+    };
+    
+    adjustContentHeight();
+    window.addEventListener('resize', adjustContentHeight);
+    
+    // 利率计算
+    document.getElementById('calculate-interest').addEventListener('click', function() {
+        const principal = parseFloat(document.getElementById('principal').value);
+        const rate = parseFloat(document.getElementById('interest-rate').value) / 100;
+        const years = parseFloat(document.getElementById('interest-years').value);
+        const type = document.getElementById('interest-type').value;
+        
+        if (isNaN(principal) || isNaN(rate) || isNaN(years)) {
+            document.getElementById('interest-result').textContent = '请输入有效数值';
+            return;
+        }
+        
+        let result;
+        if (type === 'simple') {
+            result = principal * (1 + rate * years);
+            document.getElementById('interest-result').innerHTML = `
+                <strong>简单利息计算结果：</strong><br>
+                本金: ${principal.toFixed(2)}<br>
+                利息: ${(principal * rate * years).toFixed(2)}<br>
+                本息合计: ${result.toFixed(2)}
+            `;
+        } else {
+            result = principal * Math.pow(1 + rate, years);
+            document.getElementById('interest-result').innerHTML = `
+                <strong>复利计算结果：</strong><br>
+                本金: ${principal.toFixed(2)}<br>
+                利息: ${(result - principal).toFixed(2)}<br>
+                本息合计: ${result.toFixed(2)}
+            `;
+        }
+    });
+    
+    // 贷款计算
+    document.getElementById('calculate-loan').addEventListener('click', function() {
+        const amount = parseFloat(document.getElementById('loan-amount').value);
+        const rate = parseFloat(document.getElementById('loan-rate').value) / 100 / 12;
+        const term = parseInt(document.getElementById('loan-term').value);
+        const type = document.getElementById('loan-type').value;
+        
+        if (isNaN(amount) || isNaN(rate) || isNaN(term)) {
+            document.getElementById('loan-result').textContent = '请输入有效数值';
+            return;
+        }
+        
+        if (type === 'equal-payment') {
+            // 等额本息
+            const monthlyPayment = amount * rate * Math.pow(1 + rate, term) / (Math.pow(1 + rate, term) - 1);
+            const totalPayment = monthlyPayment * term;
+            const totalInterest = totalPayment - amount;
+            
+            document.getElementById('loan-result').innerHTML = `
+                <strong>等额本息还款计划：</strong><br>
+                每月还款: ${monthlyPayment.toFixed(2)}<br>
+                总还款额: ${totalPayment.toFixed(2)}<br>
+                支付利息: ${totalInterest.toFixed(2)}<br>
+                还款总额/贷款金额: ${(totalPayment / amount).toFixed(2)}倍
+            `;
+        } else {
+            // 等额本金
+            const principalPayment = amount / term;
+            let totalInterest = 0;
+            let remaining = amount;
+            
+            for (let i = 1; i <= term; i++) {
+                const interest = remaining * rate;
+                totalInterest += interest;
+                remaining -= principalPayment;
+            }
+            
+            const totalPayment = amount + totalInterest;
+            
+            document.getElementById('loan-result').innerHTML = `
+                <strong>等额本金还款计划：</strong><br>
+                首月还款: ${(principalPayment + amount * rate).toFixed(2)}<br>
+                每月递减: ${(principalPayment * rate).toFixed(2)}<br>
+                总还款额: ${totalPayment.toFixed(2)}<br>
+                支付利息: ${totalInterest.toFixed(2)}<br>
+                还款总额/贷款金额: ${(totalPayment / amount).toFixed(2)}倍
+            `;
+        }
+    });
+    
+    // 投资回报计算
+    document.getElementById('calculate-investment').addEventListener('click', function() {
+        const initial = parseFloat(document.getElementById('initial-investment').value);
+        const final = parseFloat(document.getElementById('final-value').value);
+        const years = parseFloat(document.getElementById('investment-years').value);
+        const type = document.getElementById('investment-type').value;
+        
+        if (isNaN(initial) || isNaN(final) || isNaN(years)) {
+            document.getElementById('investment-result').textContent = '请输入有效数值';
+            return;
+        }
+        
+        if (type === 'annual') {
+            // 年化收益率
+            const rate = Math.pow(final / initial, 1 / years) - 1;
+            document.getElementById('investment-result').innerHTML = `
+                <strong>年化收益率：</strong><br>
+                ${(rate * 100).toFixed(2)}%<br>
+                初始投资: ${initial.toFixed(2)}<br>
+                最终价值: ${final.toFixed(2)}<br>
+                投资期限: ${years}年
+            `;
+        } else {
+            // 总回报率
+            const rate = (final - initial) / initial;
+            document.getElementById('investment-result').innerHTML = `
+                <strong>总回报率：</strong><br>
+                ${(rate * 100).toFixed(2)}%<br>
+                初始投资: ${initial.toFixed(2)}<br>
+                最终价值: ${final.toFixed(2)}<br>
+                投资期限: ${years}年
+            `;
+        }
+    });
+
+    // 税务计算
+    document.getElementById('calculate-tax').addEventListener('click', function() {
+        const income = parseFloat(document.getElementById('annual-income').value);
+        const deductions = parseFloat(document.getElementById('deductions').value) || 0;
+        const taxBracket = document.getElementById('tax-bracket').value;
+        
+        if (isNaN(income)) {
+            document.getElementById('tax-result').textContent = '请输入有效数值';
+            return;
+        }
+        
+        const taxableIncome = income - deductions;
+        let tax = 0;
+        
+        if (taxBracket === 'standard') {
+            // 标准税率20%
+            tax = taxableIncome * 0.2;
+        } else {
+            // 累进税率
+            if (taxableIncome <= 36000) {
+                tax = taxableIncome * 0.03;
+            } else if (taxableIncome <= 144000) {
+                tax = taxableIncome * 0.1 - 2520;
+            } else if (taxableIncome <= 300000) {
+                tax = taxableIncome * 0.2 - 16920;
+            } else if (taxableIncome <= 420000) {
+                tax = taxableIncome * 0.25 - 31920;
+            } else if (taxableIncome <= 660000) {
+                tax = taxableIncome * 0.3 - 52920;
+            } else if (taxableIncome <= 960000) {
+                tax = taxableIncome * 0.35 - 85920;
+            } else {
+                tax = taxableIncome * 0.45 - 181920;
+            }
+        }
+        
+        document.getElementById('tax-result').innerHTML = `
+            <strong>税务计算结果：</strong><br>
+            应纳税所得额: ¥${taxableIncome.toFixed(2)}<br>
+            应纳税额: ¥${tax.toFixed(2)}<br>
+            税后收入: ¥${(income - tax).toFixed(2)}<br>
+            实际税率: ${((tax / income) * 100).toFixed(2)}%
+        `;
+    });
+});
+</script>
+<!-- 金融计算器 结束 -->
